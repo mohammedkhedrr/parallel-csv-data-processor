@@ -1,134 +1,161 @@
-##💳 Transaction Analyzer — Multi-Thread Edition
+<div align="center">
 
-A parallel CSV transaction processing engine built in Java, featuring a full Swing GUI and real-time analytics powered by multi-threading.
+# 💳 Transaction Analyzer
 
+### Multi-Thread Edition
 
-📌 Table of Contents
+*A parallel CSV transaction processing engine built in Java*
 
-Overview
-Features
-Project Structure
-How It Works
-GUI Preview
-Getting Started
-CSV Format
-Technologies Used
-Key Concepts
+![Java](https://img.shields.io/badge/Java-8%2B-ED8B00?style=for-the-badge\&logo=openjdk\&logoColor=white)
+![NetBeans](https://img.shields.io/badge/NetBeans-IDE-1B6AC6?style=for-the-badge\&logo=apache-netbeans-ide\&logoColor=white)
+![Swing](https://img.shields.io/badge/GUI-Java%20Swing-4A90D9?style=for-the-badge)
+![Threads](https://img.shields.io/badge/Threads-Up%20to%2032-brightgreen?style=for-the-badge)
 
+</div>
 
-🧠 Overview
-This project processes large financial transaction datasets in parallel using Java's ExecutorService and Callable framework. It splits the CSV file into chunks, assigns each chunk to a separate thread, and merges all results at the end — significantly reducing processing time compared to a single-threaded approach.
-A full Swing GUI is included for interactive file selection, thread configuration, and live result visualization.
+---
 
-✨ Features
-FeatureDescription⚡ Parallel ProcessingSplits CSV rows across N threads simultaneously📊 Live StatisticsTotal amount, average, max/min, deposits vs withdrawals🏆 Top 10 UsersRanked by total transaction volume with share percentage🖥️ Dark-Themed GUIBuilt with Java Swing — no external UI libraries⏱️ Execution TimerMeasures and displays total processing time in ms🛡️ Fault TolerantSilently skips malformed or corrupt rows🔢 Configurable ThreadsChoose 1–32 threads via the GUI spinner
+## 📌 Table of Contents
 
-📁 Project Structure
-multithreadingg/
+* [Overview](#-overview)
+* [Features](#-features)
+* [Project Structure](#-project-structure)
+* [How It Works](#-how-it-works)
+* [Performance](#-performance)
+* [Getting Started](#-getting-started)
+* [CSV Format](#-csv-format)
+* [Technologies Used](#-technologies-used)
+* [Key Concepts](#-key-concepts)
+
+---
+
+## 🧠 Overview
+
+This project processes large financial transaction datasets in **parallel** using Java's `ExecutorService` and `Callable`.
+
+It splits the CSV file into chunks, assigns each chunk to a separate thread, and merges all results at the end — reducing execution time significantly compared to single-threaded processing.
+
+A **Swing GUI** is included for easy interaction.
+
+---
+
+## ✨ Features
+
+* ⚡ Parallel Processing (multi-threaded CSV handling)
+* 📊 Statistics (total, average, max, min)
+* 🟢 Deposits vs 🔴 Withdrawals
+* 🏆 Top Users Ranking
+* 🖥️ GUI using Java Swing
+* ⏱️ Execution Time measurement
+* 🛡️ Fault Tolerance (skip invalid rows)
+* 🔢 Configurable Threads (1–32)
+
+---
+
+## 📁 Project Structure
+
+```
+project/
 │
-├── Result.java            # Data container; holds stats and merge logic
-├── TransactionTask.java   # Callable<Result> — processes one CSV chunk
-├── Multithreadingg.java   # Console entry point (original CLI version)
-└── TransactionGUI.java    # Full Swing GUI with SwingWorker integration
+├── Result.java             # Holds statistics + merge logic
+├── TransactionTask.java    # Processes a chunk (Callable)
+├── ParallelProcessor.java  # Core processing logic
+└── ProcessorGUI.java       # GUI
+```
 
-⚙️ How It Works
-┌─────────────────────────────────────────────┐
-│              transactions.csv                │
-│  id, userId, amount, type                   │
-└───────────────────┬─────────────────────────┘
-                    │ split into N chunks
-          ┌─────────┼──────────┐
-          ▼         ▼          ▼
-     [Thread 1] [Thread 2] [Thread N]
-     Callable   Callable   Callable
-          │         │          │
-          └────┬────┘──────────┘
-               ▼
-        Result.merge()
-               ▼
-      ┌─────────────────┐
-      │  Final Results  │
-      │  Stats + Top 10 │
-      └─────────────────┘
+---
 
-Read — The entire CSV is loaded into memory (header skipped).
-Split — Rows are divided into equal chunks, one per thread.
-Process — Each TransactionTask (Callable) computes local stats independently.
-Merge — The main thread collects all Future<Result> values and merges them.
-Display — Results are shown in the GUI (or printed to console in CLI mode).
+## ⚙️ How It Works
 
+1. Read CSV file
+2. Split data into chunks
+3. Each chunk → separate thread
+4. Each thread processes data
+5. Results merged into final result
+6. Output shown in GUI
 
-🖥️ GUI Preview
-┌─────────────────────────────────────────────────────────────┐
-│  Transaction Analyzer  //  Multi-Thread Edition             │
-├──────────────────┬──────────────────────┬───────────────────┤
-│  [File Path   ]  │  Threads: [4]        │  [ ▶ Run Analysis]│
-├──────────────────┴──────────────────────┴───────────────────┤
-│                                                             │
-│  🧾 Total Transactions    12,500   │  Top 10 Users          │
-│  💰 Total Amount      $630,421.00  │  ┌──────┬───────────┐  │
-│  📊 Average             $50.43     │  │ Rank │  Amount   │  │
-│  📈 Max                $999.95     │  ├──────┼───────────┤  │
-│  📉 Min                  $0.50     │  │  #1  │ $8,234.10 │  │
-│  🟢 Deposits             7,300     │  │  #2  │ $7,891.20 │  │
-│  🔴 Withdrawals          5,200     │  │  ... │    ...    │  │
-│  ⏱️ Execution Time        42 ms    │  └──────┴───────────┘  │
-│                                                             │
-├─────────────────────────────────────────────────────────────┤
-│  ✔ Analysis complete.                     [████████████]    │
-└─────────────────────────────────────────────────────────────┘
+---
 
-🚀 Getting Started
-Prerequisites
+## 🚀 Performance
 
-Java JDK 8 or higher
-NetBeans IDE (recommended) or any Java IDE
+| Mode          | Threads | Time   |
+| ------------- | ------- | ------ |
+| Single Thread | 1       | 900 ms |
+| Multi-thread  | 4       | 300 ms |
+| Multi-thread  | 8       | 150 ms |
 
-Run in NetBeans
+> Parallel processing reduces execution time significantly.
 
-Clone or download the project.
-Open NetBeans → File → Open Project.
-Place your transactions.csv file anywhere accessible.
-Right-click TransactionGUI.java → Run File.
-Click Browse to select the CSV, set thread count, and press ▶ Run Analysis.
+---
 
-Run via Terminal
-bashjavac multithreadingg/*.java
-java multithreadingg.TransactionGUI
+## 🚀 Getting Started
 
-📄 CSV Format
-The input file must follow this structure:
-csvtransactionId,userId,amount,type
+### Requirements
+
+* Java 8+
+* NetBeans (recommended)
+
+### Run
+
+```
+Run ProcessorGUI.java
+```
+
+---
+
+## 📄 CSV Format
+
+```csv
+transactionId,userId,amount,type
 1,101,250.00,deposit
 2,102,80.50,withdraw
-3,101,415.75,deposit
-...
-ColumnTypeDescriptiontransactionIdintUnique transaction IDuserIdintID of the useramountdoubleTransaction valuetypestringdeposit or withdraw (case-insensitive)
+```
 
-Rows with missing or invalid fields are silently skipped.
+---
 
+## 🛠️ Technologies Used
 
-🛠️ Technologies Used
+* Java
+* ExecutorService
+* Callable & Future
+* Java Swing
 
-Java SE — Core language
-java.util.concurrent — ExecutorService, Callable, Future
-Java Swing — GUI framework (JFrame, JTable, JProgressBar)
-SwingWorker — Background task execution without freezing the UI
-HashMap + streams — User aggregation and sorting
+---
 
+## 💡 Key Concepts
 
-💡 Key Concepts
-Why Multi-Threading?
-Processing millions of CSV rows sequentially takes time proportional to the dataset size. By splitting the work across N threads, we achieve near linear speedup on multi-core machines.
-Why Callable over Runnable?
-Callable<Result> allows each thread to return a value (its partial Result), which is then retrieved via Future.get(). Runnable cannot return values.
-Thread Safety
-Each thread works on its own isolated chunk of data and produces an independent Result object — there is no shared mutable state between threads. Merging happens only in the main thread after all futures complete, making the design inherently thread-safe without needing synchronized blocks.
+### 🔹 Multi-threading
 
-👤 Author
-Mohamed Khaled
-Software Engineering Student
-Cairo, Egypt
+Each thread processes part of the dataset → faster execution.
 
+### 🔹 Thread Pool
 
-Built as part of a Multi-Threading & Concurrency course project.
+Using `ExecutorService` to manage threads efficiently.
+
+### 🔹 Architecture Pattern
+
+**Master-Worker Pattern**
+
+* Main thread distributes tasks
+* Worker threads process data
+* Results merged
+
+### 🔹 Design Patterns
+
+* Thread Pool Pattern
+* Map-Reduce Style
+* Separation of Concerns
+
+### 🔹 Thread Safety
+
+* No shared data between threads
+* Each thread has independent result
+* Merging done in main thread
+
+---
+
+<div align="center">
+
+**Developed by Mohamed Khaled**
+
+</div>
