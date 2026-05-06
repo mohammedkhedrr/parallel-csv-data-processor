@@ -1,4 +1,4 @@
-💳 Transaction Analyzer — Multi-Thread Edition
+##💳 Transaction Analyzer — Multi-Thread Edition
 
 A parallel CSV transaction processing engine built in Java, featuring a full Swing GUI and real-time analytics powered by multi-threading.
 
