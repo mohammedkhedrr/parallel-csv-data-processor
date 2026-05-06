@@ -156,16 +156,21 @@ Using `ExecutorService` to manage threads efficiently.
 
 <div align="center">
 
-**Developed by Mohamed Khaled Khedr**
+**Developed by**
 
 </div>
 <div align="center">
 
-**Developed by Mohamed Reda AbdElfatah**
+**Mohamed Khaled Khedr**
 
 </div>
 <div align="center">
 
-**Developed by Mohamed Gamal Belal**
+**Mohamed Reda AbdElfatah**
+
+</div>
+<div align="center">
+
+**Mohamed Gamal Belal**
 
 </div>
