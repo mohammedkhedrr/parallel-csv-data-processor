@@ -1,140 +1,134 @@
-# parallel-csv-data-processor
-# Parallel CSV Data Processing Engine
+💳 Transaction Analyzer — Multi-Thread Edition
 
-## Project Description
+A parallel CSV transaction processing engine built in Java, featuring a full Swing GUI and real-time analytics powered by multi-threading.
 
-The Parallel CSV Data Processing Engine is a system designed to efficiently process large CSV datasets using parallel processing techniques.
-Instead of reading and analyzing the file sequentially, the system divides the dataset into multiple chunks and processes them concurrently using multi-threading.
 
-This approach significantly improves performance and reduces processing time when dealing with large-scale data files.
+📌 Table of Contents
 
-The system extracts useful statistics from the dataset such as averages, counts, and other analytical metrics.
+Overview
+Features
+Project Structure
+How It Works
+GUI Preview
+Getting Started
+CSV Format
+Technologies Used
+Key Concepts
 
----
 
-## Objectives
+🧠 Overview
+This project processes large financial transaction datasets in parallel using Java's ExecutorService and Callable framework. It splits the CSV file into chunks, assigns each chunk to a separate thread, and merges all results at the end — significantly reducing processing time compared to a single-threaded approach.
+A full Swing GUI is included for interactive file selection, thread configuration, and live result visualization.
 
-The main objectives of this project are:
+✨ Features
+FeatureDescription⚡ Parallel ProcessingSplits CSV rows across N threads simultaneously📊 Live StatisticsTotal amount, average, max/min, deposits vs withdrawals🏆 Top 10 UsersRanked by total transaction volume with share percentage🖥️ Dark-Themed GUIBuilt with Java Swing — no external UI libraries⏱️ Execution TimerMeasures and displays total processing time in ms🛡️ Fault TolerantSilently skips malformed or corrupt rows🔢 Configurable ThreadsChoose 1–32 threads via the GUI spinner
 
-* Process large CSV datasets efficiently.
-* Implement multi-threading using Java concurrency tools.
-* Improve processing performance compared to single-thread execution.
-* Demonstrate the benefits of parallel data processing.
-* Build a scalable data processing architecture.
-
----
-
-## System Workflow
-
-The system works through the following steps:
-
-1. **Load CSV File**
-   The program reads a large CSV dataset from disk.
-
-2. **Split Data into Chunks**
-   The dataset is divided into smaller chunks to allow parallel processing.
-
-3. **Parallel Processing**
-   Each chunk is assigned to a separate thread using Java concurrency tools.
-
-4. **Compute Statistics**
-   Each thread processes its portion of data and calculates partial results.
-
-5. **Merge Results**
-   All results are combined to generate the final statistics.
-
----
-
-## Extracted Statistics
-
-The system can compute several statistics from the dataset, including:
-
-* Total number of records
-* Average values (e.g., average salary or age)
-* Maximum and minimum values
-* Sum of numeric columns
-* Frequency counts for categorical data
-
----
-
-## Technologies Used
-
-The project is implemented using the following technologies:
-
-* **Java**
-* **Java Concurrency API**
-
-  * Threads
-  * ExecutorService
-* **CSV Parsing**
-* **File I/O**
-
----
-
-## Project Structure
-
-The repository is organized as follows:
-
-```
-parallel-csv-data-processor
+📁 Project Structure
+multithreadingg/
 │
-├── data
-│   └── sample.csv
-│
-├── src
-│   ├── CSVReader.java
-│   ├── DataProcessor.java
-│   ├── StatisticsCalculator.java
-│   └── Main.java
-│
-├── results
-│   └── output.txt
-│
-└── README.md
-```
+├── Result.java            # Data container; holds stats and merge logic
+├── TransactionTask.java   # Callable<Result> — processes one CSV chunk
+├── Multithreadingg.java   # Console entry point (original CLI version)
+└── TransactionGUI.java    # Full Swing GUI with SwingWorker integration
 
----
+⚙️ How It Works
+┌─────────────────────────────────────────────┐
+│              transactions.csv                │
+│  id, userId, amount, type                   │
+└───────────────────┬─────────────────────────┘
+                    │ split into N chunks
+          ┌─────────┼──────────┐
+          ▼         ▼          ▼
+     [Thread 1] [Thread 2] [Thread N]
+     Callable   Callable   Callable
+          │         │          │
+          └────┬────┘──────────┘
+               ▼
+        Result.merge()
+               ▼
+      ┌─────────────────┐
+      │  Final Results  │
+      │  Stats + Top 10 │
+      └─────────────────┘
 
-## Example Dataset
+Read — The entire CSV is loaded into memory (header skipped).
+Split — Rows are divided into equal chunks, one per thread.
+Process — Each TransactionTask (Callable) computes local stats independently.
+Merge — The main thread collects all Future<Result> values and merges them.
+Display — Results are shown in the GUI (or printed to console in CLI mode).
 
-Example CSV structure:
 
-```
-ID,Name,Age,Department,Salary
-1,Ahmed,25,IT,5000
-2,Sara,30,HR,4500
-3,Omar,28,Finance,6000
-```
+🖥️ GUI Preview
+┌─────────────────────────────────────────────────────────────┐
+│  Transaction Analyzer  //  Multi-Thread Edition             │
+├──────────────────┬──────────────────────┬───────────────────┤
+│  [File Path   ]  │  Threads: [4]        │  [ ▶ Run Analysis]│
+├──────────────────┴──────────────────────┴───────────────────┤
+│                                                             │
+│  🧾 Total Transactions    12,500   │  Top 10 Users          │
+│  💰 Total Amount      $630,421.00  │  ┌──────┬───────────┐  │
+│  📊 Average             $50.43     │  │ Rank │  Amount   │  │
+│  📈 Max                $999.95     │  ├──────┼───────────┤  │
+│  📉 Min                  $0.50     │  │  #1  │ $8,234.10 │  │
+│  🟢 Deposits             7,300     │  │  #2  │ $7,891.20 │  │
+│  🔴 Withdrawals          5,200     │  │  ... │    ...    │  │
+│  ⏱️ Execution Time        42 ms    │  └──────┴───────────┘  │
+│                                                             │
+├─────────────────────────────────────────────────────────────┤
+│  ✔ Analysis complete.                     [████████████]    │
+└─────────────────────────────────────────────────────────────┘
 
----
+🚀 Getting Started
+Prerequisites
 
-## Expected Output
+Java JDK 8 or higher
+NetBeans IDE (recommended) or any Java IDE
 
-Example statistics generated by the system:
+Run in NetBeans
 
-```
-Total Records: 3
-Average Age: 27.6
-Average Salary: 5166
-Max Salary: 6000
-Min Salary: 4500
-```
+Clone or download the project.
+Open NetBeans → File → Open Project.
+Place your transactions.csv file anywhere accessible.
+Right-click TransactionGUI.java → Run File.
+Click Browse to select the CSV, set thread count, and press ▶ Run Analysis.
 
----
+Run via Terminal
+bashjavac multithreadingg/*.java
+java multithreadingg.TransactionGUI
 
-## Future Improvements
+📄 CSV Format
+The input file must follow this structure:
+csvtransactionId,userId,amount,type
+1,101,250.00,deposit
+2,102,80.50,withdraw
+3,101,415.75,deposit
+...
+ColumnTypeDescriptiontransactionIdintUnique transaction IDuserIdintID of the useramountdoubleTransaction valuetypestringdeposit or withdraw (case-insensitive)
 
-Possible improvements for the system include:
+Rows with missing or invalid fields are silently skipped.
 
-* Support for multiple file formats (JSON, Excel).
-* Visualization of statistics.
-* Distributed processing across multiple machines.
-* Advanced data analytics features.
 
----
+🛠️ Technologies Used
 
-## Team Members
+Java SE — Core language
+java.util.concurrent — ExecutorService, Callable, Future
+Java Swing — GUI framework (JFrame, JTable, JProgressBar)
+SwingWorker — Background task execution without freezing the UI
+HashMap + streams — User aggregation and sorting
 
-Mohammed Khaled
-Mohammed Reda
-Mohammed Gamal
+
+💡 Key Concepts
+Why Multi-Threading?
+Processing millions of CSV rows sequentially takes time proportional to the dataset size. By splitting the work across N threads, we achieve near linear speedup on multi-core machines.
+Why Callable over Runnable?
+Callable<Result> allows each thread to return a value (its partial Result), which is then retrieved via Future.get(). Runnable cannot return values.
+Thread Safety
+Each thread works on its own isolated chunk of data and produces an independent Result object — there is no shared mutable state between threads. Merging happens only in the main thread after all futures complete, making the design inherently thread-safe without needing synchronized blocks.
+
+👤 Author
+Mohamed Khaled
+Software Engineering Student
+Cairo, Egypt
+
+
+Built as part of a Multi-Threading & Concurrency course project.
