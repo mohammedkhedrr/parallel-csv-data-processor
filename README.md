@@ -156,7 +156,7 @@ Using `ExecutorService` to manage threads efficiently.
 
 <div align="center">
 
-**Developed by**
+**🔹 Developed by **
 
 </div>
 <div align="center">
